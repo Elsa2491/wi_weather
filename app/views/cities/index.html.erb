@@ -1,60 +1,191 @@
-<%= @output %>
+<div class="container" id="log_in_container">
+  <div class="row pt-5" id="pt-5">
+    <div class="col-12 col-sm-8 col-md-4 offset-sm-2 offset-md-4">
+      <%= form_tag(cities_path, id: 'cities', method: :get) do %>
+        <%= text_field_tag :name, params[:name], class: 'form-control', placeholder: 'Meteo forecast' %>
+        <%= submit_tag 'Submit', class: 'btn btn-default', style: 'width: 100%', id: 'filter-btn' %>
+        <%= submit_tag 'Clear', class: 'btn btn-default', type: 'reset', id: "clear-cities", style: 'width: 100%' %>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<div class="container my-5">
+  <div class="row d-flex justify-content-center">
+    <div class="col-xs-7">
+       <div class="col-12 col-sm-9 col-md-5 offset-sm-2 offset-md-4">
+        <div class="card">
+          <div class="card-header text-center border-0">
+            <p class='h2 mb-1' id="wrapper-name"></p>
+            <p class='mb-1' id="wrapper-description"></p>
+            <p class='display-6 mb-1' id="wrapper-temp"></p>
+            <p id="wrapper-feel-like"></p>
+            <span>Min: <span id="wrapper-min-temp"></span></span>
+            <span class='mx-2'>-</span>
+            <span>Max: <span id="wrapper-max-temp"></span></span>
+            <p id="wrapper-humidity"></p>
+
+             <!-- Hourly forecast -->
+            <div class="card-body border-top border-bottom text-center">
+              <div class="row">
+
+                 <div class="col-3">
+                  <strong id='one-hour-after-now' class='d-block'></strong>
+                  <img id="wrapper-icon-one-hour-after-now" src="" alt="">
+                  <strong class='d-block' id="wrapper-one-hour-after-now"></strong>
+                </div>
+
+                <div class="col-3">
+                  <strong id='two-hours-after-now' class='d-block'></strong>
+                  <img id="wrapper-icon-two-hours-after-now" src="" alt="">
+                  <strong class='d-block' id="wrapper-two-hours-after-now"></strong>
+                </div>
+
+                <div class="col-3">
+                  <strong id='three-hours-after-now' class='d-block'></strong>
+                  <img id="wrapper-icon-three-hours-after-now" src="" alt="">
+                  <strong class='d-block' id="wrapper-three-hours-after-now"></strong>
+                </div>
+
+                <div class="col-3">
+                  <strong id='four-hours-after-now' class='d-block'></strong>
+                  <img id="wrapper-icon-four-hours-after-now" src="" alt="">
+                  <strong class='d-block' id="wrapper-four-hours-after-now"></strong>
+                </div>
+              </div>
+            </div>
+
+            <!-- Daily forecast -->
+            <div class="card-body text-center">
+              <div class="row">
+                <div class="col-3">
+                  <strong id='tomorrow' class='d-block'></strong>
+                  <img id="wrapper-icon-tomorrow" src="" alt="">
+                  <div >
+                    <span id='wrapper-forecast-temp-tomorrow'></span>
+                  </div>
+                </div>
+
+                <div class="col-3">
+                  <strong id='day-after-tomorrow' class='d-block'></strong>
+                  <img id="wrapper-icon-day-after-tomorrow" src="" alt="">
+                  <div >
+                    <span id='wrapper-forecast-day-after-tomorrow'></span>
+                  </div>
+                </div>
+
+                <div class="col-3">
+                  <strong id='three-days-later' class='d-block'></strong>
+                  <img id="wrapper-icon-three-days-later" src="" alt="">
+                  <div >
+                   <span id='wrapper-forecast-three-days-later'></span>
+                  </div>
+                </div>
+
+                <div class="col-3">
+                  <strong id='four-days-later' class='d-block'></strong>
+                  <img id="wrapper-icon-four-days-later" src="" alt="">
+                  <div >
+                    <span id='wrapper-forecast-four-days-later'></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 
 
 <script>
-  let queryUrl = 'https://api.openweathermap.org/data/2.5/onecall?';
-  let lat = 'lat=48.856614&';
-  let long = 'lon=2.3522219&';
-  let apiOptions = 'lang=fr&units=metric&exclude=minutely,alerts&';
-  let apiKey = 'id=524901&appid=ee281cfabf1ec4cff7712dacc69ff59f';
-  let file = queryUrl + lat + long + apiOptions + apiKey;
+  const queryUrl = 'https://api.openweathermap.org/data/2.5/onecall?';
+  const apiOptions = 'units=metric&exclude=minutely,alerts&';
+  const apiKey = 'id=524901&appid=ee281cfabf1ec4cff7712dacc69ff59f';
 
+function fetchCityData(cityNameValue) {
+  let file =  queryUrl + latitude + longtitude + apiOptions + apiKey;
   fetch(file)
   .then((response) => response.json())
   .then((data) => {
-    console.log(data);
 
     // Weather main data
     let city = data.timezone;
-    console.log(city);
     let description = data.current.weather[0].description;
-    console.log(description);
     let temp = Math.round(data.current.temp);
-    console.log('Température : ', temp);
     let minTemp = Math.round(data.daily[0].temp.min);
-    console.log('Min : ', minTemp);
     let maxTemp = Math.round(data.daily[0].temp.max);
-    console.log('Max : ', maxTemp);
     let feelLike = Math.round(data.current.feels_like);
-    console.log('Ressenti : ', feelLike);
     let humidity = data.current.humidity;
-    console.log('Humidité : ', humidity);
+
+    const cityName = document.getElementById("wrapper-name").innerHTML;
+    cityName = city;
+    // document.getElementById("wrapper-name").innerHTML = city;
+    document.getElementById("wrapper-description").innerHTML = description;
+    document.getElementById("wrapper-temp").innerHTML = `${temp} °C`;
+    document.getElementById("wrapper-feel-like").innerHTML = `Feel like: ${feelLike} °C`;
+    document.getElementById("wrapper-min-temp").innerHTML = `${minTemp} °C`;
+    document.getElementById("wrapper-max-temp").innerHTML = `${maxTemp} °C`;
+    document.getElementById("wrapper-humidity").innerHTML = `Humidity: ${humidity}%`;
 
     // Weather hourly data
     let hourNow = Math.round(data.hourly[0].temp);
-    // console.log(hourNow);
     let oneHourAfterNow = Math.round(data.hourly[1].temp);
-    // console.log(oneHourAfterNow);
     let twoHoursAfterNow = Math.round(data.hourly[2].temp);
-    // console.log(twoHoursAfterNow);
     let threeHoursAfterNow = Math.round(data.hourly[3].temp);
-    // console.log(threeHoursAfterNow);
     let fourHoursAfterNow = Math.round(data.hourly[4].temp);
-    // console.log(fourHoursAfterNow);
     let fiveHoursAfterNow = Math.round(data.hourly[5].temp);
-    // console.log(fiveHoursAfterNow);
-    let sixHoursAfterNow = Math.round(data.hourly[6].temp);
-    // console.log(sixHoursAfterNow);
 
+
+    document.getElementById("wrapper-one-hour-after-now").innerHTML = `${oneHourAfterNow} °C`;
+    document.getElementById("wrapper-two-hours-after-now").innerHTML = `${twoHoursAfterNow} °C`;
+    document.getElementById("wrapper-three-hours-after-now").innerHTML = `${threeHoursAfterNow} °C`;
+    document.getElementById("wrapper-four-hours-after-now").innerHTML = `${fourHoursAfterNow} °C`;
+
+    // Time
+    let timeNow = new Date().getHours();
+    let timeOneHourAfterNow = timeNow + 1;
+    let timeTwoHoursAfterNow = timeNow + 2;
+    let timeThreeHoursAfterNow = timeNow + 3;
+    let timeFourHoursAfterNow = timeNow + 4;
+    document.getElementById("one-hour-after-now").innerHTML = `${timeOneHourAfterNow}h`;
+    document.getElementById("two-hours-after-now").innerHTML = `${timeTwoHoursAfterNow}h`;
+    document.getElementById("three-hours-after-now").innerHTML = `${timeThreeHoursAfterNow}h`;
+    document.getElementById("four-hours-after-now").innerHTML = `${timeFourHoursAfterNow}h`;
+
+    // Days
+    let today = new Date().getDate();
+    let tomorrow = today + 1;
+    let dayAfterTomorrow = today + 2;
+    let threeDaysLater = today + 3;
+    let fourDaysLater = today + 4;
+    document.getElementById("tomorrow").innerHTML = tomorrow;
+    document.getElementById("day-after-tomorrow").innerHTML = dayAfterTomorrow;
+    document.getElementById("three-days-later").innerHTML = threeDaysLater;
+    document.getElementById("three-days-later").innerHTML = threeDaysLater;
+    document.getElementById("four-days-later").innerHTML = fourDaysLater;
 
     // Weather daily data
     let tomorrowTemp = Math.round(data.daily[1].temp.day);
-    console.log('Demain : ', tomorrowTemp);
     let afterTomorrowTemp = Math.round(data.daily[2].temp.day);
-    console.log('Après demain : ', afterTomorrowTemp);
     let threeDaysAfterNowTemp = Math.round(data.daily[3].temp.day);
-    console.log('J+ 3 : ', threeDaysAfterNowTemp);
     let fourDaysAfterNowTemp = Math.round(data.daily[4].temp.day);
-    console.log('J+ 4 : ', fourDaysAfterNowTemp);
+
+    document.getElementById('wrapper-forecast-temp-tomorrow').innerHTML =  `${tomorrowTemp} °C`;
+    document.getElementById('wrapper-forecast-day-after-tomorrow').innerHTML = `${afterTomorrowTemp} °C`;
+    document.getElementById('wrapper-forecast-three-days-later').innerHTML =  `${threeDaysAfterNowTemp} °C`;
+    document.getElementById('wrapper-forecast-four-days-later').innerHTML =  `${fourDaysAfterNowTemp} °C`;
+
+    document.addEventListener('load', e => {
+      let cityNameValue = cityName.value;
+      fetchCityData(cityNameValue);
+    });
   })
+};
+  $(document).ready(function() {
+    CitiesIndexHelper.initialize();
+  });
 </script>

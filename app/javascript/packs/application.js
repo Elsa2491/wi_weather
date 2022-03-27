@@ -18,3 +18,5 @@ require("channels")
 
 import "controllers"
 import "bootstrap"
+
+//= require cities_index_helper
